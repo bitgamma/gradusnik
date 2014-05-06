@@ -53,26 +53,33 @@ __EEPROM_DATA('i', 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);
 #define write_calibration_offset(buf) write_eeprom(buf, CALIBRATION_OFFSET_ADDR, 2)
 
 void load_eeprom(unsigned char *buf, unsigned int addr, unsigned int len) {
+  EECON1bits.CFGS = 0;
+  EECON1bits.EEPGD = 0;
+
   for (unsigned int i = 0; i < len; i++) {
     EEADR = addr++;
-	EECON1 = 0x01;
+	EECON1bits.RD = 1;
     buf[i] = EEDATA;
   }
 }
 
 void write_eeprom(unsigned char *buf, unsigned int addr, unsigned int len) {
+  INTCONbits.GIE = 0;
+  EECON1bits.EEPGD = 0;
+  EECON1bits.CFGS = 0;
+
   for (unsigned int i = 0; i < len; i++) {
 	EEADR = addr++;
 	EEDATA = buf[i];
-	EECON1 = 0x04;
-	INTCONbits.GIE = 0;
-	EECON2 = 0x55;
-	EECON2 = 0xAA;
+	EECON1bits.WREN = 1;
+    EECON2 = 0x55;
+    EECON2 = 0xAA;
 	EECON1bits.WR = 1;
 	while(EECON1bits.WR);
-	INTCONbits.GIE = 1;
 	EECON1bits.WREN = 0;
   }
+
+  INTCONbits.GIE = 1;
 }
 
 unsigned char spi_read() {
