@@ -276,15 +276,15 @@ void main(void) {
   INTCONbits.GIE = 1;
 
   while(1) {
-    if (wdt_en) {
-      WDTCONbits.SWDTEN = 1;
-    }
-
     if (radio_sleep_en) {
       mrf24j40_sleep(0);
     }
 
-    SLEEP();
+    if (wdt_en) {
+      WDTCONbits.SWDTEN = 1;
+    }
+
+    SLEEP();    
     WDTCONbits.SWDTEN = 0;
     
     if (!RCONbits.TO) {
