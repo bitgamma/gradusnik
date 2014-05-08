@@ -24,6 +24,7 @@
 #define	CONFIG_H
 
 // PIC18F14K50 Configuration Bit Settings
+#define _XTAL_FREQ 16000000
 
 // CONFIG1L
 #pragma config CPUDIV = NOCLKDIV// CPU System Clock Selection bits (No CPU System Clock divide)
@@ -79,20 +80,27 @@
 // CONFIG7H
 #pragma config EBTRB = OFF      // Boot Block Table Read Protection bit (Boot block not protected from table reads executed in other blocks)
 
+// Includes
+#include <xc.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include "MRF24J40.h"
+#include "osnp.h"
+
 // Definitions
-#define _XTAL_FREQ 16000000
-#define TLV_MAX_INT_16_BIT
+#define OSNP_FRAME_COUNTER_WINDOW 1000
+#define OSNP_SECURITY_LEVEL SL_MIC_64
+#define OSNP_MIC_LENGTH 8
+#define LITTLE_ENDIAN
 
 #define EUI_64_ADDR 0
 #define PAN_ID_ADDR 8
-#define SHORT_ADDRESS_ADDR 10
 #define CHANNEL_ADDR 12
-#define AES_KEY 16
-
-// Includes
-#include <xc.h>
-#include "MRF24J40.h"
-#include "osnp.h"
+#define MASTER_KEY 16
+#define RX_AES_KEY 32
+#define TX_AES_KEY 48
+#define RX_FRAME_COUNTER 64
+#define TX_FRAME_COUNTER 68
 
 // MRF24J40 HAL Configuration
 #define mrf24j40_set_ie(v) (INTCON3bits.INT1E = v)
@@ -110,37 +118,44 @@
 // OSNP HAL Configuration
 #define osnp_load_eui(buf) load_eeprom(buf, EUI_64_ADDR, 8); mrf24j40_set_eui(buf)
 #define osnp_load_pan_id(buf) load_eeprom(buf, PAN_ID_ADDR, 2); mrf24j40_set_pan(buf)
-#define osnp_load_short_address(buf) load_eeprom(buf, SHORT_ADDRESS_ADDR, 2); mrf24j40_set_short_addr(buf)
 #define osnp_load_channel(ch) load_eeprom(ch, CHANNEL_ADDR, 1)
-#define osnp_load_aes_key(buf) load_eeprom(buf, AES_KEY, 16)
+#define osnp_load_master_key(buf) load_eeprom(buf, MASTER_KEY, 16); mrf24j40_rx_key(buf)
+#define osnp_load_rx_key(buf) load_eeprom(buf, RX_AES_KEY, 16); mrf24j40_rx_key(buf)
+#define osnp_load_tx_key(buf) load_eeprom(buf, TX_AES_KEY, 16); mrf24j40_tx_key(buf)
+#define osnp_load_rx_frame_counter(frame_counter) load_eeprom(frame_counter, RX_FRAME_COUNTER, 4)
+#define osnp_load_tx_frame_counter(frame_counter) load_eeprom(frame_counter, TX_FRAME_COUNTER, 4)
 
 #define osnp_write_pan_id(buf) write_eeprom(buf, PAN_ID_ADDR, 2); mrf24j40_set_pan(buf)
-#define osnp_write_short_address(buf) write_eeprom(buf, SHORT_ADDRESS_ADDR, 2); mrf24j40_set_short_addr(buf)
 #define osnp_write_channel(ch) write_eeprom(ch, CHANNEL_ADDR, 1)
+#define osnp_write_rx_key(buf) write_eeprom(buf, RX_AES_KEY, 16); mrf24j40_rx_key(buf)
+#define osnp_write_tx_key(buf) write_eeprom(buf, TX_AES_KEY, 16);  mrf24j40_tx_key(buf)
+#define osnp_write_rx_frame_counter(frame_counter) write_eeprom(frame_counter, RX_FRAME_COUNTER, 4)
+#define osnp_write_tx_frame_counter(frame_counter) write_eeprom(frame_counter, TX_FRAME_COUNTER, 4)
+
 #define osnp_process_command(frame, in_off, resp_frame, resp_off, associated) process_command(frame, in_off, resp_frame, resp_off, associated)
 
 #define osnp_switch_channel(ch) mrf24j40_set_channel(ch)
-#define osnp_transmit_frame(frame)  transmitting = 1; mrf24j40_txpkt((frame)->backing_buffer, (frame)->header_len, (frame)->payload_len)
+#define osnp_transmit_frame(frame)  transmitting = true; mrf24j40_txpkt((frame)->backing_buffer, (frame)->header_len, (frame)->sec_header_len, (frame)->payload_len)
 #define osnp_get_pending_frames() mrf24j40_get_pending_frame()
 
-#define osnp_start_channel_scanning_timer() enable_wdt(1, 0)
-#define osnp_start_association_wait_timer() enable_wdt(10, 0)
-#define osnp_start_poll_timer() enable_wdt(2, 1)
-#define osnp_start_pending_data_wait_timer() enable_wdt(1, 0)
+#define osnp_start_channel_scanning_timer() enable_wdt(1, false)
+#define osnp_start_association_wait_timer() enable_wdt(10, false)
+#define osnp_start_poll_timer() enable_wdt(2, true)
+#define osnp_start_pending_data_wait_timer() enable_wdt(1, false)
 #define osnp_stop_active_timer() disable_wdt()
 
 #define OSNP_DEVICE_CAPABILITES RX_POLL_DRIVEN
 
 // Globals
-extern unsigned char transmitting;
+extern bool transmitting;
 
 // Function prototypes
-unsigned char spi_read(void);
-void spi_write(unsigned char data);
-void load_eeprom(unsigned char *buf, unsigned int addr, unsigned int len);
-void write_eeprom(unsigned char *buf, unsigned int addr, unsigned int len);
-void enable_wdt(unsigned char periods, unsigned char radio_can_sleep);
+uint8_t spi_read(void);
+void spi_write(uint8_t data);
+void load_eeprom(uint8_t *buf, uint16_t addr, uint16_t len);
+void write_eeprom(uint8_t *buf, uint16_t addr, uint16_t len);
+void enable_wdt(uint8_t periods, uint8_t radio_can_sleep);
 void disable_wdt(void);
-void process_command(struct ieee802_15_4_frame *frame, unsigned int *in_off, struct ieee802_15_4_frame *resp_frame, unsigned int *resp_off, unsigned char associated);
+void process_command(ieee802_15_4_frame_t *frame, uint16_t *in_off, ieee802_15_4_frame_t *resp_frame, uint16_t *resp_off, uint8_t associated);
 #endif	/* CONFIG_H */
 

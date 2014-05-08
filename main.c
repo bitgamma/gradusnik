@@ -28,20 +28,25 @@
 #include <xc.h>
 #include <stdlib.h>
 
-static unsigned char rx_frame_buf[128];
+static uint8_t rx_frame_buf[128];
 
-static unsigned char wdt_en;
-static unsigned char radio_sleep_en;
-static char timer_periods;
-static short calibration_offset;
+static uint8_t wdt_en;
+static uint8_t radio_sleep_en;
+static int8_t timer_periods;
+static int16_t calibration_offset;
 
-unsigned char transmitting;
+bool transmitting;
 
 #define CALIBRATION_OFFSET_ADDR 14
-#define DEVICE_INFO_ADDR 32
+#define DEVICE_INFO_ADDR 72
 
 __EEPROM_DATA(0x70, 0x3d, 0x62, 0x63, 0x96, 0x2c, 0x9b, 0xf2);
 __EEPROM_DATA(0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00);
+__EEPROM_DATA(0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07);
+__EEPROM_DATA(0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F);
+__EEPROM_DATA(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
+__EEPROM_DATA(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
+__EEPROM_DATA(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
 __EEPROM_DATA(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
 __EEPROM_DATA(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
 __EEPROM_DATA(0x28, 0xA0, 0x26, 0x81, 0x02, 0x00, 0x01, 0x82);
@@ -54,23 +59,23 @@ __EEPROM_DATA('i', 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);
 #define load_calibration_offset(buf) load_eeprom(buf, CALIBRATION_OFFSET_ADDR, 2)
 #define write_calibration_offset(buf) write_eeprom(buf, CALIBRATION_OFFSET_ADDR, 2)
 
-void load_eeprom(unsigned char *buf, unsigned int addr, unsigned int len) {
+void load_eeprom(uint8_t *buf, uint16_t addr, uint16_t len) {
   EECON1bits.CFGS = 0;
   EECON1bits.EEPGD = 0;
 
-  for (unsigned int i = 0; i < len; i++) {
+  for (uint16_t i = 0; i < len; i++) {
     EEADR = addr++;
 	EECON1bits.RD = 1;
     buf[i] = EEDATA;
   }
 }
 
-void write_eeprom(unsigned char *buf, unsigned int addr, unsigned int len) {
+void write_eeprom(uint8_t *buf, uint16_t addr, uint16_t len) {
   INTCONbits.GIE = 0;
   EECON1bits.EEPGD = 0;
   EECON1bits.CFGS = 0;
 
-  for (unsigned int i = 0; i < len; i++) {
+  for (uint16_t i = 0; i < len; i++) {
 	EEADR = addr++;
 	EEDATA = buf[i];
 	EECON1bits.WREN = 1;
@@ -84,8 +89,8 @@ void write_eeprom(unsigned char *buf, unsigned int addr, unsigned int len) {
   INTCONbits.GIE = 1;
 }
 
-unsigned char spi_read() {
-  unsigned char tmp;
+uint8_t spi_read() {
+  uint8_t tmp;
   tmp = SSPBUF;
   PIR1bits.SSPIF = 0;
   SSPBUF = 0x00;
@@ -93,41 +98,41 @@ unsigned char spi_read() {
   return SSPBUF;
 }
 
-void spi_write(unsigned char data) {
-  unsigned char tmp;
+void spi_write(uint8_t data) {
+  uint8_t tmp;
   tmp = SSPBUF;
   PIR1bits.SSPIF = 0;
   SSPBUF = data;
   while( !PIR1bits.SSPIF );
 }
 
-void enable_wdt(unsigned char periods, unsigned char radio_can_sleep) {
-  wdt_en = 1;
+void enable_wdt(uint8_t periods, bool radio_can_sleep) {
+  wdt_en = true;
   radio_sleep_en = radio_can_sleep;
   timer_periods = periods;
 }
 
 void disable_wdt(void) {
-  wdt_en = 0;
-  radio_sleep_en = 0;
+  wdt_en = false;
+  radio_sleep_en = false;
 }
 
-unsigned int process_get_device_info(unsigned char *buf) {
-  unsigned char addr = DEVICE_INFO_ADDR;
+uint16_t process_get_device_info(uint8_t *buf) {
+  uint8_t addr = DEVICE_INFO_ADDR;
 
   EEADR = addr++;
-  EECON1 = 0x1;
-  unsigned int len = EEDATA;
+  EECON1 = 0x01;
+  uint16_t len = EEDATA;
 
   load_eeprom(buf, addr, len);
 
   return len;
 }
 
-void write_temperature(unsigned char *buf) {
+void write_temperature(uint8_t *buf) {
   ADCON0bits.GO = 1;
   while(ADCON0bits.GO);
-  unsigned short adc = (((unsigned short) ADRESH) <<8) | (ADRESL);
+  uint16_t adc = (((uint16_t) ADRESH) <<8) | (ADRESL);
 
   short v = (adc << 5); // roughly 3.2mV per step, so we multiply by 32 to convert to 1/10 mV which fits in 15bits
   short r = v % 100;
@@ -151,11 +156,11 @@ void write_temperature(unsigned char *buf) {
   v -= 500;
   v += calibration_offset;
   
-  *buf++ = ((unsigned short) v) >> 8;
+  *buf++ = ((uint16_t) v) >> 8;
   *buf++ = v & 0xff;
 };
 
-unsigned int process_get_data(unsigned char *buf) {
+uint16_t process_get_data(uint8_t *buf) {
   *buf++ = 0xA2;
   *buf++ = 0x0C;
   *buf++ = 0xA1;
@@ -174,17 +179,17 @@ unsigned int process_get_data(unsigned char *buf) {
   return 14;
 }
 
-unsigned int process_configure(unsigned char *in_buf) {
+uint16_t process_configure(uint8_t *in_buf) {
   //TODO: crude, but should work
   if (in_buf[3] == 0x82) {
     calibration_offset = (in_buf[4] << 8) | in_buf[5];
-    write_calibration_offset((unsigned char *)&calibration_offset);
+    write_calibration_offset((uint8_t *)&calibration_offset);
   }
 
   return 0;
 }
 
-void write_error(unsigned char tag, unsigned char err, struct ieee802_15_4_frame *resp_frame, unsigned int *resp_off) {
+void write_error(uint8_t tag, uint8_t err, ieee802_15_4_frame_t *resp_frame, uint16_t *resp_off) {
   *resp_off += tlv_write_tag(&resp_frame->payload[*resp_off], tag);
   *resp_off += tlv_write_length(&resp_frame->payload[*resp_off], 3);
   *resp_off += tlv_write_tag(&resp_frame->payload[*resp_off], 0x9E);
@@ -192,9 +197,9 @@ void write_error(unsigned char tag, unsigned char err, struct ieee802_15_4_frame
   resp_frame->payload[*resp_off++] = err;
 }
 
-void process_command(struct ieee802_15_4_frame *frame, unsigned int *in_off, struct ieee802_15_4_frame *resp_frame, unsigned int *resp_off, unsigned char associated) {
-  unsigned int tag;
-  unsigned int len;
+void process_command(ieee802_15_4_frame_t *frame, uint16_t *in_off, ieee802_15_4_frame_t *resp_frame, uint16_t *resp_off, uint8_t associated) {
+  uint16_t tag;
+  uint16_t len;
 
   *in_off += tlv_read_tag(&frame->payload[*in_off], &tag);
   *in_off += tlv_read_length(&frame->payload[*in_off], &len);
@@ -229,13 +234,17 @@ void interrupt isr(void) {
     INTCON3bits.INT1F = 0;
     int interrupts = mrf24j40_int_tasks();
     
-    if (interrupts & MRF24J40_INT_RX) {
+    if ((interrupts & MRF24J40_INT_RX) && !mrf24j40_rx_sec_fail()) {
       osnp_frame_received_cb(rx_frame_buf, mrf24j40_rxpkt_intcb(rx_frame_buf, NULL, NULL));
     }
 
     if (interrupts & MRF24J40_INT_TX) {
-      transmitting = 0;
+      transmitting = false;
       osnp_frame_sent_cb(mrf24j40_txpkt_intcb());
+    }
+
+    if (interrupts & MRF24J40_INT_SEC) {
+      mrf24j40_sec_intcb(true);
     }
   }
 }
@@ -268,8 +277,9 @@ void main(void) {
   SSPSTATbits.CKE = 1;
   SSPCON1 = 0x20;
 
-  load_calibration_offset((unsigned char *)&calibration_offset);
+  load_calibration_offset((uint8_t *)&calibration_offset);
   mrf24j40_initialize();
+  mrf24j40_set_cipher(OSNP_SECURITY_LEVEL, OSNP_SECURITY_LEVEL);
   osnp_initialize();
   
   INTCON3bits.INT1F = 0;
@@ -299,8 +309,8 @@ void main(void) {
           mrf24j40_wakeup(0);
         }
 
-        wdt_en = 0;
-        radio_sleep_en = 0;
+        wdt_en = false;
+        radio_sleep_en = false;
         osnp_timer_expired_cb();
       }
     }
