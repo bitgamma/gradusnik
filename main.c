@@ -225,8 +225,6 @@ void process_command(struct ieee802_15_4_frame *frame, unsigned int *in_off, str
 }
 
 void interrupt isr(void) {
-  WDTCONbits.SWDTEN = 0;
-
   if (INTCON3bits.INT1F) {
     INTCON3bits.INT1F = 0;
     int interrupts = mrf24j40_int_tasks();
