@@ -35,6 +35,8 @@ static unsigned char radio_sleep_en;
 static unsigned char timer_periods;
 static short calibration_offset;
 
+unsigned char transmitting;
+
 #define CALIBRATION_OFFSET_ADDR 14
 #define DEVICE_INFO_ADDR 32
 
@@ -235,6 +237,7 @@ void interrupt isr(void) {
     }
 
     if (interrupts & MRF24J40_INT_TX) {
+      transmitting = 0;
       osnp_frame_sent_cb(mrf24j40_txpkt_intcb());
     }
   }
@@ -280,7 +283,7 @@ void main(void) {
       mrf24j40_sleep(0);
     }
 
-    if (wdt_en) {
+    if (wdt_en || transmitting) {
       WDTCONbits.SWDTEN = 1;
     }
 

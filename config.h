@@ -120,7 +120,7 @@
 #define osnp_process_command(frame, in_off, resp_frame, resp_off, associated) process_command(frame, in_off, resp_frame, resp_off, associated)
 
 #define osnp_switch_channel(ch) mrf24j40_set_channel(ch)
-#define osnp_transmit_frame(frame) mrf24j40_txpkt((frame)->backing_buffer, (frame)->header_len, (frame)->payload_len);
+#define osnp_transmit_frame(frame)  transmitting = 1; mrf24j40_txpkt((frame)->backing_buffer, (frame)->header_len, (frame)->payload_len)
 #define osnp_get_pending_frames() mrf24j40_get_pending_frame()
 
 #define osnp_start_channel_scanning_timer() enable_wdt(1, 0)
@@ -131,6 +131,8 @@
 
 #define OSNP_DEVICE_CAPABILITES RX_POLL_DRIVEN
 
+// Globals
+extern unsigned char transmitting;
 
 // Function prototypes
 unsigned char spi_read(void);
