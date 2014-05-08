@@ -32,7 +32,7 @@ static unsigned char rx_frame_buf[128];
 
 static unsigned char wdt_en;
 static unsigned char radio_sleep_en;
-static unsigned char timer_periods;
+static char timer_periods;
 static short calibration_offset;
 
 unsigned char transmitting;
@@ -282,7 +282,7 @@ void main(void) {
       mrf24j40_sleep(0);
     }
 
-    if (wdt_en || transmitting) {
+    if (transmitting || wdt_en) {
       WDTCONbits.SWDTEN = 1;
     }
 
@@ -292,7 +292,7 @@ void main(void) {
     if (!RCONbits.TO) {
       timer_periods--;
 
-      if (!timer_periods) {
+      if (timer_periods <= 0) {
         if (radio_sleep_en) {
           mrf24j40_wakeup(0);
         }
