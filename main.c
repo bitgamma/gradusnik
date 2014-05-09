@@ -234,8 +234,12 @@ void interrupt isr(void) {
     INTCON3bits.INT1F = 0;
     int interrupts = mrf24j40_int_tasks();
     
-    if ((interrupts & MRF24J40_INT_RX) && !mrf24j40_rx_sec_fail()) {
-      osnp_frame_received_cb(rx_frame_buf, mrf24j40_rxpkt_intcb(rx_frame_buf, NULL, NULL));
+    if (interrupts & MRF24J40_INT_RX) {
+      if (!mrf24j40_rx_sec_fail()) {
+        osnp_frame_received_cb(rx_frame_buf, mrf24j40_rxpkt_intcb(rx_frame_buf, NULL, NULL));
+      } else {
+        mrf24j40_rxfifo_flush();
+      }
     }
 
     if (interrupts & MRF24J40_INT_TX) {
