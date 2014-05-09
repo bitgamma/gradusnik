@@ -95,6 +95,7 @@
 
 #define EUI_64_ADDR 0
 #define PAN_ID_ADDR 8
+#define SHORT_ADDRESS_ADDR 10
 #define CHANNEL_ADDR 12
 #define MASTER_KEY 16
 #define RX_AES_KEY 32
@@ -118,6 +119,7 @@
 // OSNP HAL Configuration
 #define osnp_load_eui(buf) load_eeprom(buf, EUI_64_ADDR, 8); mrf24j40_set_eui(buf)
 #define osnp_load_pan_id(buf) load_eeprom(buf, PAN_ID_ADDR, 2); mrf24j40_set_pan(buf)
+#define osnp_load_short_address(buf) load_eeprom(buf, SHORT_ADDRESS_ADDR, 2); mrf24j40_set_short_addr(buf)
 #define osnp_load_channel(ch) load_eeprom(ch, CHANNEL_ADDR, 1)
 #define osnp_load_master_key(buf) load_eeprom(buf, MASTER_KEY, 16); mrf24j40_rx_key(buf)
 #define osnp_load_rx_key(buf) load_eeprom(buf, RX_AES_KEY, 16); mrf24j40_rx_key(buf)
@@ -126,6 +128,7 @@
 #define osnp_load_tx_frame_counter(frame_counter) load_eeprom(frame_counter, TX_FRAME_COUNTER, 4)
 
 #define osnp_write_pan_id(buf) write_eeprom(buf, PAN_ID_ADDR, 2); mrf24j40_set_pan(buf)
+#define osnp_write_short_address(buf) write_eeprom(buf, SHORT_ADDRESS_ADDR, 2); mrf24j40_set_short_addr(buf)
 #define osnp_write_channel(ch) write_eeprom(ch, CHANNEL_ADDR, 1)
 #define osnp_write_rx_key(buf) write_eeprom(buf, RX_AES_KEY, 16); mrf24j40_rx_key(buf)
 #define osnp_write_tx_key(buf) write_eeprom(buf, TX_AES_KEY, 16);  mrf24j40_tx_key(buf)
