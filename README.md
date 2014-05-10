@@ -14,7 +14,7 @@ The schematics will be posted soon, as soon as they are cleaned up.
 ## Bill of components
 
 * 1x [PIC18(L)F14K50](http://www.microchip.com/wwwproducts/Devices.aspx?dDocName=en533924)
-* 1x [MRF24J40MA](www.microchip.com/mrf24j40ma)
+* 1x [MRF24J40MA](http://www.microchip.com/mrf24j40ma)
 * 1x [MCP9700](http://www.microchip.com/wwwproducts/Devices.aspx?product=MCP9700)
 
 Capacitors, resistors, connectors, etc will be listed later.
