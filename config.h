@@ -136,7 +136,7 @@
 #define osnp_write_tx_frame_counter(frame_counter) write_eeprom(frame_counter, TX_FRAME_COUNTER, 4)
 
 #define osnp_process_command(frame, in_off, resp_frame, resp_off, associated) process_command(frame, in_off, resp_frame, resp_off, associated)
-
+#define osnp_build_notification(frame, notification_offset)
 #define osnp_switch_channel(ch) mrf24j40_set_channel(ch)
 #define osnp_transmit_frame(frame)  transmitting = true; mrf24j40_txpkt((frame)->backing_buffer, (frame)->header_len, (frame)->sec_header_len, (frame)->payload_len)
 #define osnp_get_pending_frames() mrf24j40_get_pending_frame()
