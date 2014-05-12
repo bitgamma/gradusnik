@@ -5,7 +5,7 @@ Gradusnik is an OSNP-compatible Thermometer for PIC18F14K50 + MRF24J40. This is 
 
 Gradusnik is just above 9k when compiled with xc8 (Pro) for the PIC18F14K50 and includes the OSNP-stack, the MRF24J40 driver and the device-specific logic. Nonetheless, the entire OSNP protocol is implemented, including security.
 
-You can use this project as basis to create your own OSNP-based device, performing other functions other than sensing temperature.
+You can use this project as basis to create your own OSNP-based device, performing other functions, than sensing temperature.
 
 ## Schematics
 
