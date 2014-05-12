@@ -28,7 +28,7 @@ A compile script will be added, but in the meantime you can compile it manually.
 * [OSNP Protocol Stack](https://github.com/briksoftware/osnp)
 * [MRF24J40 Driver](https://github.com/briksoftware/mrf24j40)
 
-You can either leave each project in its own folder or copy all the .c and .h files in the same folder (which is easier)
+You can either leave each project in its own folder or copy all the .c and .h files in the same folder (which is easier).
 
 ### Step 2: Create MPLAB X Project
 
