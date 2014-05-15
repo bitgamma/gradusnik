@@ -13,9 +13,9 @@ These are the current schematics
 
 ![Gradusnik schematics](gradusnik.jpg)
 
-Powering such a device with 3 AAA battery and using an LDO is a waste of space and power respectively, but this what I did for the first revision's prototype, where the focus was on developing the software. The circuit has been realized on a matrix prototyping board using the THT version of all components.
+Powering such a device with 3 AAA batteries and using an LDO is a waste of space and power respectively, but this what I did for the first revision's prototype, where the focus was on developing the software. The circuit has been realized on a matrix prototyping board using the THT version of all components.
 
-The next revision of the board will be done on PCB, powered by 3v lithium battery using a charge pump IC able to deliver peaks of at least 30mA. The PCB design and updated schematics will be posted.
+The next revision of the board will be done on PCB, powered by 3v coin lithium battery using a charge pump IC able to deliver peaks of at least 30mA. The PCB design and updated schematics will be posted.
 
 ## Bill of materials
 
