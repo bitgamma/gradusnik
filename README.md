@@ -5,19 +5,29 @@ Gradusnik is an OSNP-compatible Thermometer for PIC18F14K50 + MRF24J40. This is 
 
 Gradusnik is just above 9k when compiled with xc8 (Pro) for the PIC18F14K50 and includes the OSNP-stack, the MRF24J40 driver and the device-specific logic. Nonetheless, the entire OSNP protocol is implemented, including security.
 
-You can use this project as basis to create your own OSNP-based device, performing other functions, than sensing temperature.
+You can use this project as basis to create your own OSNP-based device, performing other functions than sensing temperature.
 
 ## Schematics
 
-The schematics will be posted soon, as soon as they are cleaned up.
+These are the current schematics
 
-## Bill of components
+![Gradusnik schematics](gradusnik.jpg)
+
+Powering such a device with 3 AAA battery and using an LDO is a waste of space and power respectively, but this what I did for the first revision's prototype, where the focus was on developing the software. The circuit has been realized on a matrix prototyping board using the THT version of all components.
+
+The next revision of the board will be done on PCB, powered by 3v lithium battery using a charge pump IC able to deliver peaks of at least 30mA. The PCB design and updated schematics will be posted.
+
+## Bill of materials
 
 * 1x [PIC18(L)F14K50](http://www.microchip.com/wwwproducts/Devices.aspx?dDocName=en533924)
 * 1x [MRF24J40MA](http://www.microchip.com/mrf24j40ma)
 * 1x [MCP9700](http://www.microchip.com/wwwproducts/Devices.aspx?product=MCP9700)
-
-Capacitors, resistors, connectors, etc will be listed later.
+* 1x [MAX884](http://www.maximintegrated.com/datasheet/index.mvp/id/1214)
+* 1x 10k Resistor
+* 1x 0.1µF Ceramic capitor
+* 1x 1µF Ceramic capitor
+* 1x 2.2µF Ceramic capitor
+* 6x Header pins with 2,54mm spacing for the ICSP header 
 
 ## How to compile
 
