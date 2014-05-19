@@ -290,31 +290,44 @@ void main(void) {
   INTCONbits.GIE = 1;
 
   while(1) {
-    while(transmitting) {
+    uint16_t tx_timeout = 500;
+    while(transmitting && tx_timeout) {
       __delay_ms(1);
+      tx_timeout--;
+    }
+
+    // the transceiver skipped an interrupt
+    if (transmitting) {
+      transmitting = false;
+      mrf24j40_read_short_ctrl_reg(INTSTAT);
+      osnp_frame_sent_cb(mrf24j40_txpkt_intcb());
     }
 
     if (radio_sleep_en) {
-      mrf24j40_sleep(0);
+      INTCONbits.GIE = 0;
+      mrf24j40_sleep();
     }
 
     if (wdt_en) {
       WDTCONbits.SWDTEN = 1;
     }
 
-    SLEEP();    
+    SLEEP();
     WDTCONbits.SWDTEN = 0;
-    
+
     if (!RCONbits.TO) {
       timer_periods--;
 
       if (timer_periods <= 0) {
-        if (radio_sleep_en) {
-          mrf24j40_wakeup(0);
-        }
-
         wdt_en = false;
-        radio_sleep_en = false;
+
+        if (radio_sleep_en) {
+          radio_sleep_en = false;
+          mrf24j40_wakeup();
+          mrf24j40_rxfifo_flush();
+          INTCONbits.GIE = 1;
+        }
+        
         osnp_timer_expired_cb();
       }
     }
