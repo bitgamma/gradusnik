@@ -1,33 +1,33 @@
 Gradusnik
 =========
 
-Gradusnik is an OSNP-compatible Thermometer for PIC18F14K50 + MRF24J40. This is the first project implementing the [OSNP](https://github.com/briksoftware/osnp) protocol and provides an example of how to use it.
+Gradusnik is an OSNP-compatible Thermometer for PIC18LF24K22 + MRF24J40. This is the first project implementing the [OSNP](https://github.com/briksoftware/osnp) protocol and provides an example of how to use it.
 
-Gradusnik is just above 9k when compiled with xc8 (Pro) for the PIC18F14K50 and includes the OSNP-stack, the MRF24J40 driver and the device-specific logic. Nonetheless, the entire OSNP protocol is implemented, including security.
+Gradusnik is just above 9k when compiled with xc8 (Pro) for the PIC18F24K22 and includes the OSNP-stack, the MRF24J40 driver and the device-specific logic. Nonetheless, the entire OSNP protocol is implemented, including security.
 
 You can use this project as basis to create your own OSNP-based device, performing other functions than sensing temperature.
 
-## Schematics
+## Schematics & PCB
 
 These are the current schematics
 
 ![Gradusnik schematics](gradusnik.jpg)
-
-Powering such a device with 3 AAA batteries and using an LDO is a waste of space and power respectively, but this what I did for the first revision's prototype, where the focus was on developing the software. The circuit has been realized on a matrix prototyping board using the THT version of all components.
-
-The next revision of the board will be done on PCB, powered by 3v coin lithium battery using a charge pump IC able to deliver peaks of at least 30mA. The PCB design and updated schematics will be posted.
+![Gradusnik PCB](gradusnik_pcb.jpg)
 
 ## Bill of materials
 
-* 1x [PIC18(L)F14K50](http://www.microchip.com/wwwproducts/Devices.aspx?dDocName=en533924)
+* 1x [PIC18LF24K22](http://www.microchip.com/wwwproducts/Devices.aspx?dDocName=en547749)
 * 1x [MRF24J40MA](http://www.microchip.com/mrf24j40ma)
 * 1x [MCP9700](http://www.microchip.com/wwwproducts/Devices.aspx?product=MCP9700)
-* 1x [MAX884](http://www.maximintegrated.com/datasheet/index.mvp/id/1214)
-* 1x 10k Resistor
-* 1x 0.1µF Ceramic capitor
-* 1x 1µF Ceramic capitor
-* 1x 2.2µF Ceramic capitor
+* 1x [LTC3525-3.3](http://www.linear.com/product/LTC3525)
+* 1x 10µH inductance
+* 1x 10kΩ resistor
+* 1x 200Ω resistor
+* 3x 1µF Ceramic capitor
+* 1x 22µF Ceramic capitor
 * 6x Header pins with 2,54mm spacing for the ICSP header 
+
+If you intend to use the provided PCB design, download the DipTrace Schematics/PCB for details about the footprint of the components.
 
 ## How to compile
 
@@ -42,7 +42,7 @@ You can either leave each project in its own folder or copy all the .c and .h fi
 
 ### Step 2: Create MPLAB X Project
 
-Create an MPLABX project, choose PIC18F14K50 as target and select your programmer/debugger device. Import all source files. If you copied all source/header files in the same directory, you can just hit "compile" and you are done.
+Create an MPLABX project, choose PIC18LF24K22 as target and select your programmer/debugger device. Import all source files. If you copied all source/header files in the same directory, you can just hit "compile" and you are done.
 
 Otherwise you will have to play with the project settings and explictly add the include directories. The setup where each project mantains its own directory simplifies contributing your changes back.
 
