@@ -91,19 +91,19 @@ void write_eeprom(uint8_t *buf, uint16_t addr, uint16_t len) {
 
 uint8_t spi_read() {
   uint8_t tmp;
-  tmp = SSPBUF;
-  PIR1bits.SSPIF = 0;
-  SSPBUF = 0x00;
-  while(!PIR1bits.SSPIF);
-  return SSPBUF;
+  tmp = SSP1BUF;
+  PIR1bits.SSP1IF = 0;
+  SSP1BUF = 0x00;
+  while(!PIR1bits.SSP1IF);
+  return SSP1BUF;
 }
 
 void spi_write(uint8_t data) {
   uint8_t tmp;
-  tmp = SSPBUF;
-  PIR1bits.SSPIF = 0;
-  SSPBUF = data;
-  while( !PIR1bits.SSPIF );
+  tmp = SSP1BUF;
+  PIR1bits.SSP1IF = 0;
+  SSP1BUF = data;
+  while( !PIR1bits.SSP1IF );
 }
 
 void enable_wdt(uint8_t periods, bool radio_can_sleep) {
@@ -130,34 +130,35 @@ uint16_t process_get_device_info(uint8_t *buf) {
 }
 
 void write_temperature(uint8_t *buf) {
+  LATAbits.LA0 = 1;
+  VREFCON0 = 0x90;
+  ADCON0bits.ADON = 1;
+
+  __delay_ms(1);
+
   ADCON0bits.GO = 1;
   while(ADCON0bits.GO);
-  uint16_t adc = (((uint16_t) ADRESH) <<8) | (ADRESL);
+  
+  uint16_t adc = (((uint16_t) ADRESH) << 8) | (ADRESL);
 
-  short v = (adc << 5); // roughly 3.2mV per step, so we multiply by 32 to convert to 1/10 mV which fits in 15bits
-  short r = v % 100;
-
-  // Maximum accuracy from chip (when calibrated, which is not yet) is 0.5
-  // and we read a 10-bit value from ADC so giving anything more
-  // accurate would be a lie
-  if (r <= 25) {
-    v -= r;
-  } else {
-    v += (100 - r);
-
-    if (r <= 75) {
-      v -= 50;
-    }
+  if (adc >= 1023) {
+    VREFCON0 = 0xA0;
+    ADCON0bits.GO = 1;
+    while(ADCON0bits.GO);
+    adc = (((uint16_t) ADRESH) << 8) | (ADRESL);
+    adc = (adc << 1);
   }
 
-  v /= 10;
+  LATAbits.LA0 = 0;
+  ADCON0bits.ADON = 0;
+  VREFCON0bits.FVREN = 0;
 
   // 500mV is our 0 point
-  v -= 500;
-  v += calibration_offset;
+  adc -= 500;
+  adc += calibration_offset;
   
-  *buf++ = ((uint16_t) v) >> 8;
-  *buf++ = v & 0xff;
+  *buf++ = ((uint16_t) adc) >> 8;
+  *buf++ = adc & 0xff;
 };
 
 uint16_t process_get_data(uint8_t *buf) {
@@ -254,32 +255,32 @@ void interrupt isr(void) {
 }
 
 void main(void) {
-  UCONbits.USBEN = 0;
   INTCONbits.GIE = 0;
-  OSCCONbits.IRCF = 0b111;
+  OSCCONbits.IRCF = 0x07;
   RCONbits.IPEN = 0;
   INTCON3bits.INT1E = 1;
   INTCON2bits.INTEDG1 = 0;
   
-  TRISA = 0;
-  TRISB = 0x10;
-  TRISC = 0x0A;
+  TRISA = 0x20;
+  TRISB = 0x02;
+  TRISC = 0x10;
 
   LATA = 0;
   LATB = 0;
   LATC = 0;
 
-  WPUA = 0;
   WPUB = 0;
   
-  ADCON0 = 0b00011101;
-  ADCON1 = 0;
-  ADCON2 = 0b10101010;
-  ANSELH = 0;
-  ANSEL = 0b10000000;
+  ADCON0 = 0x10;
+  ADCON1 = 0x08;
+  ADCON2 = 0xAA;
 
-  SSPSTATbits.CKE = 1;
-  SSPCON1 = 0x20;
+  ANSELA = 0x20;
+  ANSELB = 0x00;
+  ANSELC = 0x00;
+
+  SSP1STATbits.CKE = 1;
+  SSP1CON1 = 0x20;
 
   load_calibration_offset((uint8_t *)&calibration_offset);
   mrf24j40_initialize();

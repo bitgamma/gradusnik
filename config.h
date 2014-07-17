@@ -26,59 +26,69 @@
 // PIC18F14K50 Configuration Bit Settings
 #define _XTAL_FREQ 16000000
 
-// CONFIG1L
-#pragma config CPUDIV = NOCLKDIV// CPU System Clock Selection bits (No CPU System Clock divide)
-#pragma config USBDIV = OFF     // USB Clock Selection bit (USB clock comes directly from the OSC1/OSC2 oscillator block; no divide)
+
+// PIC18F26K22 Configuration Bit Settings
 
 // CONFIG1H
-#pragma config FOSC = IRC       // Oscillator Selection bits (Internal RC oscillator)
-#pragma config PLLEN = OFF      // 4 X PLL Enable bit (PLL is under software control)
-#pragma config PCLKEN = ON      // Primary Clock Enable bit (Primary clock enabled)
-#pragma config FCMEN = OFF      // Fail-Safe Clock Monitor Enable (Fail-Safe Clock Monitor disabled)
+#pragma config FOSC = INTIO67   // Oscillator Selection bits (Internal oscillator block)
+#pragma config PLLCFG = OFF     // 4X PLL Enable (Oscillator used directly)
+#pragma config PRICLKEN = ON    // Primary clock enable bit (Primary clock enabled)
+#pragma config FCMEN = OFF      // Fail-Safe Clock Monitor Enable bit (Fail-Safe Clock Monitor disabled)
 #pragma config IESO = OFF       // Internal/External Oscillator Switchover bit (Oscillator Switchover mode disabled)
 
 // CONFIG2L
-#pragma config PWRTEN = ON      // Power-up Timer Enable bit (PWRT enabled)
-#pragma config BOREN = NOSLP    // Brown-out Reset Enable bits (Brown-out Reset enabled in hardware only and disabled in Sleep mode (SBOREN is disabled))
-#pragma config BORV = 22        // Brown-out Reset Voltage bits (VBOR set to 2.2 V nominal)
+#pragma config PWRTEN = ON      // Power-up Timer Enable bit (Power up timer enabled)
+#pragma config BOREN = SBORDIS  // Brown-out Reset Enable bits (Brown-out Reset enabled in hardware only (SBOREN is disabled))
+#pragma config BORV = 190       // Brown Out Reset Voltage bits (VBOR set to 1.90 V nominal)
 
 // CONFIG2H
-#pragma config WDTEN = OFF      // Watchdog Timer Enable bit (WDT is controlled by SWDTEN bit of the WDTCON register)
-#pragma config WDTPS = 256    // Watchdog Timer Postscale Select bits (1:256)
+#pragma config WDTEN = SWON     // Watchdog Timer Enable bits (WDT is controlled by SWDTEN bit of the WDTCON register)
+#pragma config WDTPS = 256      // Watchdog Timer Postscale Select bits (1:256)
 
 // CONFIG3H
-#pragma config HFOFST = OFF     // HFINTOSC Fast Start-up bit (The system clock is held off until the HFINTOSC is stable.)
-#pragma config MCLRE = ON       // MCLR Pin Enable bit (MCLR pin enabled; RA3 input pin disabled)
+#pragma config CCP2MX = PORTB3  // CCP2 MUX bit (CCP2 input/output is multiplexed with RB3)
+#pragma config PBADEN = OFF     // PORTB A/D Enable bit (PORTB<5:0> pins are configured as digital I/O on Reset)
+#pragma config CCP3MX = PORTB5  // P3A/CCP3 Mux bit (P3A/CCP3 input/output is multiplexed with RB5)
+#pragma config HFOFST = OFF     // HFINTOSC Fast Start-up (HFINTOSC output and ready status are delayed by the oscillator stable status)
+#pragma config T3CMX = PORTB5   // Timer3 Clock input mux bit (T3CKI is on RB5)
+#pragma config P2BMX = PORTB5   // ECCP2 B output mux bit (P2B is on RB5)
+#pragma config MCLRE = EXTMCLR  // MCLR Pin Enable bit (MCLR pin enabled, RE3 input pin disabled)
 
 // CONFIG4L
 #pragma config STVREN = ON      // Stack Full/Underflow Reset Enable bit (Stack full/underflow will cause Reset)
-#pragma config LVP = OFF        // Single-Supply ICSP Enable bit (Single-Supply ICSP disabled)
-#pragma config BBSIZ = OFF      // Boot Block Size Select bit (1kW boot block size)
-#pragma config XINST = OFF       // Extended Instruction Set Enable bit (Instruction set extension and Indexed Addressing mode disabled)
+#pragma config LVP = ON         // Single-Supply ICSP Enable bit (Single-Supply ICSP enabled if MCLRE is also 1)
+#pragma config XINST = OFF      // Extended Instruction Set Enable bit (Instruction set extension and Indexed Addressing mode disabled (Legacy mode))
 
 // CONFIG5L
-#pragma config CP0 = OFF        // Code Protection bit (Block 0 not code-protected)
-#pragma config CP1 = OFF        // Code Protection bit (Block 1 not code-protected)
+#pragma config CP0 = OFF        // Code Protection Block 0 (Block 0 (000800-003FFFh) not code-protected)
+#pragma config CP1 = OFF        // Code Protection Block 1 (Block 1 (004000-007FFFh) not code-protected)
+#pragma config CP2 = OFF        // Code Protection Block 2 (Block 2 (008000-00BFFFh) not code-protected)
+#pragma config CP3 = OFF        // Code Protection Block 3 (Block 3 (00C000-00FFFFh) not code-protected)
 
 // CONFIG5H
-#pragma config CPB = OFF        // Boot Block Code Protection bit (Boot block not code-protected)
+#pragma config CPB = OFF        // Boot Block Code Protection bit (Boot block (000000-0007FFh) not code-protected)
 #pragma config CPD = OFF        // Data EEPROM Code Protection bit (Data EEPROM not code-protected)
 
 // CONFIG6L
-#pragma config WRT0 = OFF       // Table Write Protection bit (Block 0 not write-protected)
-#pragma config WRT1 = OFF       // Table Write Protection bit (Block 1 not write-protected)
+#pragma config WRT0 = OFF       // Write Protection Block 0 (Block 0 (000800-003FFFh) not write-protected)
+#pragma config WRT1 = OFF       // Write Protection Block 1 (Block 1 (004000-007FFFh) not write-protected)
+#pragma config WRT2 = OFF       // Write Protection Block 2 (Block 2 (008000-00BFFFh) not write-protected)
+#pragma config WRT3 = OFF       // Write Protection Block 3 (Block 3 (00C000-00FFFFh) not write-protected)
 
 // CONFIG6H
-#pragma config WRTC = OFF       // Configuration Register Write Protection bit (Configuration registers not write-protected)
-#pragma config WRTB = OFF       // Boot Block Write Protection bit (Boot block not write-protected)
+#pragma config WRTC = OFF       // Configuration Register Write Protection bit (Configuration registers (300000-3000FFh) not write-protected)
+#pragma config WRTB = OFF       // Boot Block Write Protection bit (Boot Block (000000-0007FFh) not write-protected)
 #pragma config WRTD = OFF       // Data EEPROM Write Protection bit (Data EEPROM not write-protected)
 
 // CONFIG7L
-#pragma config EBTR0 = OFF      // Table Read Protection bit (Block 0 not protected from table reads executed in other blocks)
-#pragma config EBTR1 = OFF      // Table Read Protection bit (Block 1 not protected from table reads executed in other blocks)
+#pragma config EBTR0 = OFF      // Table Read Protection Block 0 (Block 0 (000800-003FFFh) not protected from table reads executed in other blocks)
+#pragma config EBTR1 = OFF      // Table Read Protection Block 1 (Block 1 (004000-007FFFh) not protected from table reads executed in other blocks)
+#pragma config EBTR2 = OFF      // Table Read Protection Block 2 (Block 2 (008000-00BFFFh) not protected from table reads executed in other blocks)
+#pragma config EBTR3 = OFF      // Table Read Protection Block 3 (Block 3 (00C000-00FFFFh) not protected from table reads executed in other blocks)
 
 // CONFIG7H
-#pragma config EBTRB = OFF      // Boot Block Table Read Protection bit (Boot block not protected from table reads executed in other blocks)
+#pragma config EBTRB = OFF      // Boot Block Table Read Protection bit (Boot Block (000000-0007FFh) not protected from table reads executed in other blocks)
+
 
 // Includes
 #include <xc.h>
@@ -108,7 +118,7 @@
 #define mrf24j40_get_ie() (INTCON3bits.INT1E)
 
 #define mrf24j40_reset_pin(v) (PORTCbits.RC0 = v)
-#define mrf24j40_wake_pin(v) (PORTBbits.RB5 = v)
+#define mrf24j40_wake_pin(v) (PORTCbits.RC1 = v)
 #define mrf24j40_cs_pin(v) (PORTCbits.RC2 = v)
 
 #define mrf24j40_spi_read() spi_read()
