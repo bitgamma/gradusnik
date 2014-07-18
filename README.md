@@ -9,9 +9,12 @@ You can use this project as basis to create your own OSNP-based device, performi
 
 ## Schematics & PCB
 
-These are the current schematics
+These are the current schematics...
 
 ![Gradusnik schematics](gradusnik.jpg)
+
+...and PCB design
+
 ![Gradusnik PCB](gradusnik_pcb.jpg)
 
 ## Bill of materials
@@ -25,6 +28,7 @@ These are the current schematics
 * 1x 200Ω resistor
 * 3x 1µF Ceramic capitor
 * 1x 22µF Ceramic capitor
+* 1x Keystone 1028 battery holder
 * 6x Header pins with 2,54mm spacing for the ICSP header 
 
 If you intend to use the provided PCB design, download the DipTrace Schematics/PCB for details about the footprint of the components.
