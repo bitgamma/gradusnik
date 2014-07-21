@@ -24,7 +24,7 @@
 #define	CONFIG_H
 
 // PIC18F14K50 Configuration Bit Settings
-#define _XTAL_FREQ 16000000
+#define _XTAL_FREQ 500000
 
 
 // PIC18F26K22 Configuration Bit Settings
@@ -37,7 +37,7 @@
 #pragma config IESO = OFF       // Internal/External Oscillator Switchover bit (Oscillator Switchover mode disabled)
 
 // CONFIG2L
-#pragma config PWRTEN = ON      // Power-up Timer Enable bit (Power up timer enabled)
+#pragma config PWRTEN = OFF     // Power-up Timer Enable bit (Power up timer disabled)
 #pragma config BOREN = OFF      // Brown-out Reset Enable bits (Brown-out Reset disabled in hardware and software)
 #pragma config BORV = 190       // Brown Out Reset Voltage bits (VBOR set to 1.90 V nominal)
 
@@ -49,7 +49,7 @@
 #pragma config CCP2MX = PORTB3  // CCP2 MUX bit (CCP2 input/output is multiplexed with RB3)
 #pragma config PBADEN = OFF     // PORTB A/D Enable bit (PORTB<5:0> pins are configured as digital I/O on Reset)
 #pragma config CCP3MX = PORTB5  // P3A/CCP3 Mux bit (P3A/CCP3 input/output is multiplexed with RB5)
-#pragma config HFOFST = OFF     // HFINTOSC Fast Start-up (HFINTOSC output and ready status are delayed by the oscillator stable status)
+#pragma config HFOFST = ON      // HFINTOSC Fast Start-up (HFINTOSC output and ready status are not delayed by the oscillator stable status)
 #pragma config T3CMX = PORTB5   // Timer3 Clock input mux bit (T3CKI is on RB5)
 #pragma config P2BMX = PORTB5   // ECCP2 B output mux bit (P2B is on RB5)
 #pragma config MCLRE = EXTMCLR  // MCLR Pin Enable bit (MCLR pin enabled, RE3 input pin disabled)

@@ -151,7 +151,7 @@ void write_temperature(uint8_t *buf) {
 
   LATAbits.LA0 = 0;
   ADCON0bits.ADON = 0;
-  VREFCON0bits.FVREN = 0;
+  VREFCON0 = 0;
 
   // 500mV is our 0 point
   adc -= 500;
@@ -255,8 +255,10 @@ void interrupt isr(void) {
 }
 
 void main(void) {
+  OSCCON2bits.MFIOSEL = 1;
+  OSCCONbits.IRCF = 0x02;
+  
   INTCONbits.GIE = 0;
-  OSCCONbits.IRCF = 0x07;
   RCONbits.IPEN = 0;
   INTCON3bits.INT1E = 1;
   INTCON2bits.INTEDG1 = 0;
@@ -273,7 +275,7 @@ void main(void) {
   
   ADCON0 = 0x10;
   ADCON1 = 0x08;
-  ADCON2 = 0xAA;
+  ADCON2 = 0xAF;
 
   ANSELA = 0x20;
   ANSELB = 0x00;
